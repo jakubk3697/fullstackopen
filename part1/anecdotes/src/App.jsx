@@ -37,6 +37,7 @@ const App = () => {
   ])
 
   const [selected, setSelected] = useState(0)
+  const [bestAnecdote, setBestAnecdote] = useState(0)
 
   const handleRandomAnecdote = () => {
     setSelected(Math.floor(Math.random() * anecdotes.length))
@@ -46,15 +47,26 @@ const App = () => {
     const newAnecdotes = [...anecdotes]
     newAnecdotes[selected].votes += 1
     setAnecdotes(newAnecdotes)
+    handleBestAnecdote()
+  }
+
+  const handleBestAnecdote = () => {
+    const best = anecdotes.reduce((maxIndex, current, index, arr) =>
+      current.votes > arr[maxIndex].votes ? index : maxIndex, 0);
+    setBestAnecdote(best);
   }
 
   return (
     <div>
+      <h2>Annecdote of the day</h2>
       {anecdotes[selected].anecdote}
       <br />
       <p>has {anecdotes[selected].votes} votes</p>
       <button onClick={handleRandomAnecdote}>next anecdote</button>
       <button onClick={handleVote}>vote</button>
+      <br />
+      <h2>Anecdote with most votes</h2>
+      <p>{anecdotes[bestAnecdote].anecdote}</p>
     </div>
   )
 }
