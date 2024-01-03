@@ -41,6 +41,8 @@ const Statistics = ({ good, neutral, bad }) => {
             <tr>
               <StatisticLine text="positive" value={positive + " %"} />
             </tr>
+
+
           </tbody>
         </table>
         :
@@ -50,12 +52,7 @@ const Statistics = ({ good, neutral, bad }) => {
   )
 }
 
-const StatisticLine = ({ text, value }) => (
-  <>
-    <td>{text}</td>
-    <td>{value}</td>
-  </>
-)
+const StatisticLine = ({ text, value }) => <p>{text} {value}</p>;
 
 const Button = ({ onClick, text, value }) => {
   const handleClick = () => onClick(value + 1);
