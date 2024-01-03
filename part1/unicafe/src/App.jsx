@@ -8,7 +8,7 @@ const Statistics = ({ good, neutral, bad }) => {
   return (
     <>
       <h2>statistics</h2>
-      {all > 0 ?
+      {/* {all > 0 ?
         <div>
           <StatisticLine text="good" value={good} />
           <StatisticLine text="neutral" value={neutral} />
@@ -19,12 +19,43 @@ const Statistics = ({ good, neutral, bad }) => {
         </div>
         :
         <p>No feedback given</p>
+      } */}
+      {all > 0 ?
+        <table>
+          <tbody>
+            <tr>
+              <StatisticLine text="good" value={good} />
+            </tr>
+            <tr>
+              <StatisticLine text="neutral" value={neutral} />
+            </tr>
+            <tr>
+              <StatisticLine text="bad" value={bad} />
+            </tr>
+            <tr>
+              <StatisticLine text="all" value={all} />
+            </tr>
+            <tr>
+              <StatisticLine text="average" value={average} />
+            </tr>
+            <tr>
+              <StatisticLine text="positive" value={positive + " %"} />
+            </tr>
+          </tbody>
+        </table>
+        :
+        <p>No feedback given</p>
       }
     </>
   )
 }
 
-const StatisticLine = ({ text, value }) => <p>{text} {value}</p>;
+const StatisticLine = ({ text, value }) => (
+  <>
+    <td>{text}</td>
+    <td>{value}</td>
+  </>
+)
 
 const Button = ({ onClick, text, value }) => {
   const handleClick = () => onClick(value + 1);
