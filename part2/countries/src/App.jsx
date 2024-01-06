@@ -17,8 +17,13 @@ const CountryDetails = ({ country }) => (
   </>
 );
 
-const CountryList = ({ countries }) => (
-  countries.map(country => <p key={country.name.common}>{country.name.common}</p>)
+const CountryList = ({ countries, handleShowCountry }) => (
+  countries.map(country => (
+    <p key={country.name.common}>
+      {country.name.common}
+      <button onClick={() => handleShowCountry(country)}>show</button>
+    </p>
+  ))
 );
 
 function App() {
@@ -36,12 +41,16 @@ function App() {
     }
   }, [newCountry])
 
+  const handleShowCountry = (country) => {
+    setCountries([country])
+  }
+
   const checkCountriesAmount = () => {
     if (!countries || !newCountry) return null;
     if (countries.length === 1) return <CountryDetails country={countries[0]} />;
     if (countries.length === 0) return <p>No matches</p>;
     if (countries.length > 10) return <p>There are too many matches, specify another filter</p>;
-    return <CountryList countries={countries} />;
+    return <CountryList countries={countries} handleShowCountry={handleShowCountry} />;
   };
 
   return (
