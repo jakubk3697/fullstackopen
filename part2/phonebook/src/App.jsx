@@ -3,12 +3,17 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import personsService from './services/persons'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filterName, setFilterName] = useState('')
+  const [notification, setNotification] = useState({
+    message: null,
+    isError: false
+  })
 
   useEffect(() => {
     personsService
@@ -28,6 +33,16 @@ const App = () => {
     const existingPerson = persons.find(person => person.name === newName)
 
     if (!existingPerson) {
+      setNotification({
+        message: `Added ${newName}`,
+        isError: false
+      })
+      setTimeout(() => {
+        setNotification({
+          message: null,
+          isError: false
+        })
+      }, 5000);
       return personsService
         .create(nameObject)
         .then(returnedPerson => {
@@ -36,6 +51,16 @@ const App = () => {
     }
 
     if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+      setNotification({
+        message: `Changed ${newName}'s number`,
+        isError: false
+      })
+      setTimeout(() => {
+        setNotification({
+          message: null,
+          isError: false
+        })
+      }, 5000);
       const changedPerson = { ...existingPerson, number: newNumber }
       personsService
         .update(existingPerson.id, changedPerson)
@@ -56,6 +81,19 @@ const App = () => {
         .then(() => {
           setPersons(persons.filter(person => person.id !== id))
         })
+        .catch(error => {
+          setNotification({
+            message: `Information of ${person.name} has already been removed from server`,
+            isError: true
+          })
+          setTimeout(() => {
+            setNotification({
+              message: null,
+              isError: false
+            })
+          }, 5000);
+          setPersons(persons.filter(person => person.id !== id))
+        })
     }
   }
 
@@ -74,6 +112,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification notification={notification} />
       <Filter filterName={filterName} handleFilterName={handleFilterName} />
 
       <h2>Add a new</h2>
