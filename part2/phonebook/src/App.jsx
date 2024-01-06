@@ -10,7 +10,10 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filterName, setFilterName] = useState('')
-  const [notification, setNotification] = useState(null)
+  const [notification, setNotification] = useState({
+    message: null,
+    isError: false
+  })
 
   useEffect(() => {
     personsService
@@ -30,9 +33,15 @@ const App = () => {
     const existingPerson = persons.find(person => person.name === newName)
 
     if (!existingPerson) {
-      setNotification(`Added ${newName}`)
+      setNotification({
+        message: `Added ${newName}`,
+        isError: false
+      })
       setTimeout(() => {
-        setNotification(null)
+        setNotification({
+          message: null,
+          isError: false
+        })
       }, 5000);
       return personsService
         .create(nameObject)
@@ -42,9 +51,15 @@ const App = () => {
     }
 
     if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
-      setNotification(`A number of ${newName} has been changed`)
+      setNotification({
+        message: `Changed ${newName}'s number`,
+        isError: false
+      })
       setTimeout(() => {
-        setNotification(null)
+        setNotification({
+          message: null,
+          isError: false
+        })
       }, 5000);
       const changedPerson = { ...existingPerson, number: newNumber }
       personsService
@@ -66,6 +81,19 @@ const App = () => {
         .then(() => {
           setPersons(persons.filter(person => person.id !== id))
         })
+        .catch(error => {
+          setNotification({
+            message: `Information of ${person.name} has already been removed from server`,
+            isError: true
+          })
+          setTimeout(() => {
+            setNotification({
+              message: null,
+              isError: false
+            })
+          }, 5000);
+          setPersons(persons.filter(person => person.id !== id))
+        })
     }
   }
 
@@ -84,7 +112,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={notification} />
+      <Notification notification={notification} />
       <Filter filterName={filterName} handleFilterName={handleFilterName} />
 
       <h2>Add a new</h2>
