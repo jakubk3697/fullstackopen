@@ -1,30 +1,9 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react'
 import countriesServices from './services/countries'
-
-const CountryDetails = ({ country }) => (
-  <>
-    <h1>{country.name.common}</h1>
-    <p>capital {country.capital[0]}</p>
-    <p>population {country.population}</p>
-    <p>area {country.area} km<sup>2</sup></p>
-    <br />
-    <h2>borders</h2>
-    <ul>
-      {Object.entries(country.languages).map(([key, value]) => <li key={key}>{value}</li>)}
-    </ul>
-    <img src={country.flags.png} alt={country.flag.alt} width="200" height="100" />
-  </>
-);
-
-const CountryList = ({ countries, handleShowCountry }) => (
-  countries.map(country => (
-    <p key={country.name.common}>
-      {country.name.common}
-      <button onClick={() => handleShowCountry(country)}>show</button>
-    </p>
-  ))
-);
+import weatherServices from './services/weather'
+import CountryList from './components/CountryList'
+import CountryDetails from './components/CountryDetails'
 
 function App() {
   const [countries, setCountries] = useState(null)
@@ -34,16 +13,32 @@ function App() {
     if (newCountry !== '') {
       countriesServices
         .getAll()
-        .then(initialCountries => {
+        .then(async initialCountries => {
           const filteredCountries = initialCountries.filter(country => country.name.common.toLowerCase().includes(newCountry.toLowerCase()))
-          setCountries(filteredCountries)
+          if (filteredCountries.length === 1) {
+            try {
+              const weather = await weatherServices.getCurrentWeather(filteredCountries[0].capital[0])
+              const countryWithWeather = { ...filteredCountries[0], weather }
+              setCountries([countryWithWeather])
+            } catch (error) {
+              setCountries(filteredCountries)
+            }
+          } else {
+            setCountries(filteredCountries)
+          }
         })
     }
   }, [newCountry])
 
-  const handleShowCountry = (country) => {
-    setCountries([country])
-  }
+  const handleShowCountry = async (country) => {
+    try {
+      const weather = await weatherServices.getCurrentWeather(country.capital[0]);
+      const countryWithWeather = { ...country, weather };
+      setCountries([countryWithWeather]);
+    } catch (error) {
+      setCountries([country]);
+    }
+  };
 
   const checkCountriesAmount = () => {
     if (!countries || !newCountry) return null;
@@ -54,16 +49,15 @@ function App() {
   };
 
   return (
-    <>
-      <div>
-        find countries <input type="text" value={newCountry} onChange={(event) => setNewCountry(event.target.value)} />
-      </div>
-      <div>
-        <ul>
-          {checkCountriesAmount()}
-        </ul>
-      </div>
-    </>
+    <main>
+      <h2>
+        Find countries
+      </h2>
+      <input type="text" value={newCountry} onChange={(event) => setNewCountry(event.target.value)} />
+      <ul>
+        {checkCountriesAmount()}
+      </ul>
+    </main>
   )
 }
 
