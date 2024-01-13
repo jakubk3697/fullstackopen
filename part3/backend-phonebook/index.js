@@ -3,6 +3,8 @@ const morgan = require('morgan')
 const app = express()
 const cors = require('cors')
 
+// mongodb mongodb+srv://fullstack:<password>@cluster0.o1opl.mongodb.net/?retryWrites=true&w=majority
+
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
