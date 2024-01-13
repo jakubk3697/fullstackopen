@@ -1,0 +1,1 @@
+Link to the deployed app on the fly.io: https://fullstackopen-backend-jakub-kaminski.fly.dev/
