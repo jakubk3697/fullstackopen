@@ -48,6 +48,18 @@ const App = () => {
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
         })
+        .catch(error => {
+          setNotification({
+            message: error.response.data.error,
+            isError: true
+          })
+          setTimeout(() => {
+            setNotification({
+              message: null,
+              isError: false
+            })
+          }, 5000);
+        })
     }
 
     if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
@@ -66,6 +78,18 @@ const App = () => {
         .update(existingPerson.id, changedPerson)
         .then(returnedPerson => {
           setPersons(persons.map(person => person.id !== existingPerson.id ? person : returnedPerson))
+        })
+        .catch(error => {
+          setNotification({
+            message: error.response.data.error,
+            isError: true
+          })
+          setTimeout(() => {
+            setNotification({
+              message: null,
+              isError: false
+            })
+          }, 5000);
         })
     }
 
