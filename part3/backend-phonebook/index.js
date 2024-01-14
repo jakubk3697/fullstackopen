@@ -47,7 +47,7 @@ const unknownEndpoint = (request, response) => {
 const errorHandler = (error, request, response, next) => {
   console.error(error.message)
 
-  if (error.name === 'CastError' && error.kind == 'ObjectId') {
+  if (error.name === 'CastError' && error.kind === 'ObjectId') {
     return response.status(400).send({ error: 'malformatted id' })
   } else if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message })
@@ -59,7 +59,7 @@ const errorHandler = (error, request, response, next) => {
 app.use(express.json())
 app.use(express.static('dist'))
 app.use(morgan('tiny'));
-morgan.token('body', function (req, res) { return JSON.stringify(req.body) });
+morgan.token('body', function (req) { return JSON.stringify(req.body) });
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'));
 app.use(cors())
@@ -117,9 +117,9 @@ app.get('/api/persons/:id', (req, res, next) => {
     .catch(error => next(error))
 })
 
-app.delete('/api/persons/:id', (req, res) => {
+app.delete('/api/persons/:id', (req, res, next) => {
   Person.findByIdAndDelete(req.params.id)
-    .then(result => {
+    .then(() => {
       res.status(204).end()
     })
     .catch(error => next(error))
