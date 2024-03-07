@@ -26,6 +26,11 @@ test("all blogs are returned", async () => {
   expect(response.body).toHaveLength(helper.initialBlogs.length);
 });
 
+test("blog posts have 'id as identifier", async () => {
+  const response = await api.get("/api/blogs");
+  expect(response.body[0].id).toBeDefined();
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
