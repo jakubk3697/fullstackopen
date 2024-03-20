@@ -4,6 +4,7 @@ const helper = require("./test_helper");
 const app = require("../app");
 const api = supertest(app);
 const Blog = require("../models/blog");
+const jwt = require("jsonwebtoken");
 
 beforeEach(async () => {
   await Blog.deleteMany({});
@@ -14,7 +15,7 @@ beforeEach(async () => {
   }
 });
 
-describe("when there is initially some notes saved", () => {
+describe("when there is initially some blogs saved", () => {
   test("blogs are returned as json", async () => {
     await api
       .get("/api/blogs")
@@ -35,13 +36,22 @@ describe("when viewing a specific blog", () => {
   });
 });
 
-describe("when addition of a new note", () => {
+const getTokenFrom = (request) => {
+  const authorization = request.get("authorization");
+  if (authorization && authorization.startsWith("Bearer ")) {
+    return authorization.replace("Bearer ", "");
+  }
+  return null;
+};
+
+describe("when addition of a new blog", () => {
   test("a valid blog can be added", async () => {
     const newBlog = {
       title: "Jest test title",
       author: "Mr. Jest",
       url: "www.jest.com",
       likes: 12,
+      user: "65f7673a8d113ff4efa13f42",
     };
 
     await api
