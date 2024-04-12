@@ -57,6 +57,7 @@ const App = () => {
       console.log("wrong credentials");
     }
   };
+
   const addBlog = async (blogObject) => {
     try {
       const returnedBlog = await blogService.create(blogObject);
@@ -68,6 +69,17 @@ const App = () => {
     } catch (exception) {
       console.log(exception);
       setNotification({ message: "error adding blog", color: "red" });
+    }
+  };
+
+  const updateBlog = async (blogObject) => {
+    try {
+      const updatedBlog = await blogService.update(blogObject.id, blogObject);
+      setBlogs(
+        blogs.map((blog) => (blog.id !== updatedBlog.id ? blog : updatedBlog))
+      );
+    } catch (exception) {
+      console.log(exception);
     }
   };
 
@@ -122,7 +134,7 @@ const App = () => {
           </Togglable>
 
           {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} />
+            <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
           ))}
         </>
       )}

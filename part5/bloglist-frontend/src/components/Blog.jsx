@@ -1,7 +1,8 @@
 import { useState } from "react";
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, updateBlog }) => {
   const [visible, setVisible] = useState(false);
+  const [updatedBlog, setUpdatedBlog] = useState(blog);
 
   const blogStyle = {
     paddingTop: 10,
@@ -9,6 +10,14 @@ const Blog = ({ blog }) => {
     border: "solid",
     borderWidth: 1,
     marginBottom: 5,
+  };
+
+  const handleLikeClick = () => {
+    setUpdatedBlog((prevBlog) => {
+      const newBlog = { ...prevBlog, likes: prevBlog.likes + 1 };
+      updateBlog(newBlog);
+      return newBlog;
+    });
   };
 
   return (
@@ -21,9 +30,9 @@ const Blog = ({ blog }) => {
           <div>
             <p>{blog.url}</p>
             <p>
-              likes {blog.likes} <button>like</button>
+              likes {blog.likes} <button onClick={handleLikeClick}>like</button>
             </p>
-            <p>{blog?.user?.name}</p>
+            <p>{updatedBlog?.user?.name}</p>
           </div>
         )}
 
