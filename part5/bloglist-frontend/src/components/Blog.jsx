@@ -1,14 +1,24 @@
 import { useState } from "react";
 
-const Blog = ({ blog, updateBlog }) => {
+const Blog = ({ blog, updateBlog, deleteBlog }) => {
   const [visible, setVisible] = useState(false);
   const [updatedBlog, setUpdatedBlog] = useState(blog);
 
   const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
+    padding: 8,
     border: "solid",
     borderWidth: 1,
+    marginBottom: 5,
+  };
+
+  const deleteBtnStyle = {
+    backgroundColor: "red",
+    color: "white",
+    borderRadius: 5,
+    padding: 6,
+    border: "none",
+    cursor: "pointer",
+    fontWeight: "bold",
     marginBottom: 5,
   };
 
@@ -18,6 +28,12 @@ const Blog = ({ blog, updateBlog }) => {
       updateBlog(newBlog);
       return newBlog;
     });
+  };
+
+  const handleDeleteClick = () => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      deleteBlog(blog);
+    }
   };
 
   return (
@@ -33,6 +49,9 @@ const Blog = ({ blog, updateBlog }) => {
               likes {blog.likes} <button onClick={handleLikeClick}>like</button>
             </p>
             <p>{updatedBlog?.user?.name}</p>
+            <button style={deleteBtnStyle} onClick={handleDeleteClick}>
+              remove
+            </button>
           </div>
         )}
 

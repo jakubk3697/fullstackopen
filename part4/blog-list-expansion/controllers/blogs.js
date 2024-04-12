@@ -47,6 +47,7 @@ blogsRouter.post("/", async (request, response) => {
 
 blogsRouter.delete("/:id", async (request, response) => {
   const user = request.user;
+  console.log("user", user);
 
   if (!user) {
     return response.status(401).json({ error: "token invalid" });
@@ -64,7 +65,6 @@ blogsRouter.delete("/:id", async (request, response) => {
 
 blogsRouter.put("/:id", async (request, response) => {
   const body = request.body;
-  console.log(body);
 
   const blog = {
     likes: body.likes,
