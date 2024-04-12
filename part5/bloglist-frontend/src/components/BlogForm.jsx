@@ -7,8 +7,6 @@ const BlogForm = ({ createBlog }) => {
     url: "",
   });
 
-  console.log(newBlog);
-
   const addBlog = (e) => {
     e.preventDefault();
     createBlog(newBlog);
@@ -54,7 +52,7 @@ const BlogForm = ({ createBlog }) => {
             }
           />
         </div>
-        <button type="submit">create</button>
+        <button type="submit">Create new blog</button>
       </form>
     </>
   );
