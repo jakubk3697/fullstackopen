@@ -6,6 +6,8 @@ const {
   getByRole,
 } = require("@playwright/test");
 
+const { loginWith, createBlog } = require("./helper");
+
 describe("Blog app", () => {
   beforeEach(async ({ page, request }) => {
     await request.post("/api/testing/reset");
@@ -33,18 +35,14 @@ describe("Blog app", () => {
 
   describe("when logged in", () => {
     test("succeeds with correct credentials", async ({ page }) => {
-      await page.getByTestId("username-input").fill("admin");
-      await page.getByTestId("password-input").fill("admin");
-      await page.getByTestId("login-submit").click();
+      await loginWith(page, "admin", "admin");
 
       const blogs = await page.getByTestId("blogs").count();
       expect(blogs).toBe(0);
     });
 
     test("fails with wrong credentials", async ({ page }) => {
-      await page.getByTestId("username-input").fill("admin");
-      await page.getByTestId("password-input").fill("wrong");
-      await page.getByTestId("login-submit").click();
+      await loginWith(page, "admin", "wrongpassword");
 
       await page.waitForSelector('[data-testid="error"]');
       const error = await page.getByTestId("error").innerText();
@@ -54,35 +52,24 @@ describe("Blog app", () => {
 
     describe("When logged in", () => {
       beforeEach(async ({ page }) => {
-        await page.getByTestId("username-input").fill("admin");
-        await page.getByTestId("password-input").fill("admin");
-        await page.getByTestId("login-submit").click();
+        await loginWith(page, "admin", "admin");
       });
 
       test("a new blog can be created", async ({ page }) => {
-        await page.locator(".newBlog").click();
         const title = "playwright test blog title";
         const author = "playwright test blog author";
         const url = "www.playwright.com";
 
-        await page.getByTestId("title-input").fill(title);
-        await page.getByTestId("author-input").fill(author);
-        await page.getByTestId("url-input").fill(url);
-        await page.getByTestId("create-blog-submit").click();
-
+        await createBlog(page, title, author, url);
         await expect(page.getByText(`${title} ${author}`)).not.toBeNull();
       });
 
       test("a blog can be liked", async ({ page }) => {
-        await page.locator(".newBlog").click();
         const title = "playwright test blog title";
         const author = "playwright test blog author";
         const url = "www.playwright.com";
 
-        await page.getByTestId("title-input").fill(title);
-        await page.getByTestId("author-input").fill(author);
-        await page.getByTestId("url-input").fill(url);
-        await page.getByTestId("create-blog-submit").click();
+        await createBlog(page, title, author, url);
 
         await page.getByTestId("view-blog").click();
         await page.getByTestId("like-blog").click();
@@ -91,14 +78,11 @@ describe("Blog app", () => {
       });
 
       test("a blog can be deleted", async ({ page }) => {
-        await page.locator(".newBlog").click();
         const title = "playwright test blog title";
         const author = "playwright test blog author";
         const url = "www.playwright.com";
 
-        await page.getByTestId("title-input").fill(title);
-        await page.getByTestId("author-input").fill(author);
-        await page.getByTestId("url-input").fill(url);
+        await createBlog(page, title, author, url);
         await page.getByTestId("create-blog-submit").click();
 
         await page.getByTestId("view-blog").click();
