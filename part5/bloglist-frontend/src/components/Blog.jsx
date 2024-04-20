@@ -45,9 +45,13 @@ const Blog = ({ blog, updateBlog, deleteBlog }) => {
         {visible && (
           <div>
             <p>{blog.url}</p>
-            <p>
-              likes {blog.likes} <button onClick={handleLikeClick}>like</button>
-            </p>
+            <div>
+              <span data-testid="likes">likes {blog.likes}</span>
+              <button data-testid="like-blog" onClick={handleLikeClick}>
+                {" "}
+                like
+              </button>
+            </div>
             <p>{updatedBlog?.user?.name}</p>
             <button style={deleteBtnStyle} onClick={handleDeleteClick}>
               remove
@@ -55,7 +59,7 @@ const Blog = ({ blog, updateBlog, deleteBlog }) => {
           </div>
         )}
 
-        <button onClick={() => setVisible(!visible)}>
+        <button data-testid="view-blog" onClick={() => setVisible(!visible)}>
           {visible ? "hide" : "view"}
         </button>
       </div>
