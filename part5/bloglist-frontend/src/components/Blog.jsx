@@ -53,7 +53,11 @@ const Blog = ({ blog, updateBlog, deleteBlog }) => {
               </button>
             </div>
             <p>{updatedBlog?.user?.name}</p>
-            <button style={deleteBtnStyle} onClick={handleDeleteClick}>
+            <button
+              data-testid="delete-blog"
+              style={deleteBtnStyle}
+              onClick={handleDeleteClick}
+            >
               remove
             </button>
           </div>

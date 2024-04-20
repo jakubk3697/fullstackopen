@@ -89,6 +89,27 @@ describe("Blog app", () => {
 
         await expect(page.getByTestId("likes")).toContainText("1");
       });
+
+      test("a blog can be deleted", async ({ page }) => {
+        await page.locator(".newBlog").click();
+        const title = "playwright test blog title";
+        const author = "playwright test blog author";
+        const url = "www.playwright.com";
+
+        await page.getByTestId("title-input").fill(title);
+        await page.getByTestId("author-input").fill(author);
+        await page.getByTestId("url-input").fill(url);
+        await page.getByTestId("create-blog-submit").click();
+
+        await page.getByTestId("view-blog").click();
+        await page.getByTestId("delete-blog").click();
+        await page.on("dialog", async (dialog) => {
+          await dialog.accept();
+          await page.waitForSelector('[data-testid="blogs"]');
+          const blogs = await page.getByTestId("blogs").count();
+          expect(blogs).toBe(0);
+        });
+      });
     });
   });
 });
