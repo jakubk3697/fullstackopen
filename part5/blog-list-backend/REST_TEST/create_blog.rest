@@ -1,0 +1,10 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpZCI6IjY1Zjc2NzNhOGQxMTNmZjRlZmExM2Y0MiIsImlhdCI6MTcxMDcxODEwOH0.pfo5hXrRrPHGGT0smRJFlWT5EWVGjNeiD-xHBdmj8oY
+
+{
+  "title": "new blog with middleware",
+  "author": "root middleware tester",
+  "url": "www.root-middleware.com",
+  "likes": 12
+}

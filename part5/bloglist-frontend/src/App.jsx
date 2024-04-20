@@ -101,7 +101,12 @@ const App = () => {
     return (
       <>
         <div style={hideWhenVisible}>
-          <button onClick={() => setLoginVisible(true)}>login</button>
+          <button
+            data-testid="login-button"
+            onClick={() => setLoginVisible(true)}
+          >
+            login
+          </button>
         </div>
 
         <div style={showWhenVisible}>
@@ -114,7 +119,9 @@ const App = () => {
           />
           <button onClick={() => setLoginVisible(false)}>cancel</button>
           {notification.message && (
-            <p style={{ color: notification.color }}>{notification.message}</p>
+            <p style={{ color: notification.color }} data-testid="error">
+              {notification.message}
+            </p>
           )}
         </div>
       </>
@@ -144,14 +151,16 @@ const App = () => {
             <BlogForm createBlog={addBlog} />
           </Togglable>
 
-          {blogs.map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              updateBlog={updateBlog}
-              deleteBlog={deleteBlog}
-            />
-          ))}
+          <div data-testid="blogs">
+            {blogs.map((blog) => (
+              <Blog
+                key={blog.id}
+                blog={blog}
+                updateBlog={updateBlog}
+                deleteBlog={deleteBlog}
+              />
+            ))}
+          </div>
         </>
       )}
     </>

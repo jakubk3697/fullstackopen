@@ -25,9 +25,26 @@ test("Check that the blog's URL and number of likes are shown when the button co
 
   render(<Blog blog={blog} updateBlog={mockHandler} />);
 
+  const user = userEvent.setup();
   const button = screen.getByText("view", { exact: false });
-  await userEvent.click(button);
+  await user.click(button);
 
   expect(screen.getByText(blog.url)).toBeInTheDocument();
   expect(screen.getByText(`likes ${blog.likes}`)).toBeInTheDocument();
+});
+
+test("Check that if the like button is clicked twice, the event handler the component received as props is called twice.", async () => {
+  const mockHandler = vi.fn();
+
+  render(<Blog blog={blog} updateBlog={mockHandler} />);
+
+  const user = userEvent.setup();
+  const button = screen.getByText("view", { exact: false });
+  await user.click(button);
+
+  const likeButton = screen.getByText("like");
+  await user.click(likeButton);
+  await user.click(likeButton);
+
+  expect(mockHandler.mock.calls).toHaveLength(2);
 });
