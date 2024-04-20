@@ -1,4 +1,10 @@
-const { test, expect, beforeEach, describe } = require("@playwright/test");
+const {
+  test,
+  expect,
+  beforeEach,
+  describe,
+  getByRole,
+} = require("@playwright/test");
 
 describe("Blog app", () => {
   beforeEach(async ({ page, request }) => {
@@ -25,7 +31,7 @@ describe("Blog app", () => {
     expect(password).not.toBeNull();
   });
 
-  describe("Login", () => {
+  describe("when logged in", () => {
     test("succeeds with correct credentials", async ({ page }) => {
       await page.getByTestId("username-input").fill("admin");
       await page.getByTestId("password-input").fill("admin");
@@ -44,6 +50,28 @@ describe("Blog app", () => {
       const error = await page.getByTestId("error").innerText();
 
       expect(error).toBe("wrong username or password");
+    });
+
+    describe("When logged in", () => {
+      beforeEach(async ({ page }) => {
+        await page.getByTestId("username-input").fill("admin");
+        await page.getByTestId("password-input").fill("admin");
+        await page.getByTestId("login-submit").click();
+      });
+
+      test("a new blog can be created", async ({ page }) => {
+        await page.locator(".newBlog").click();
+        const title = "playwright test blog title";
+        const author = "playwright test blog author";
+        const url = "www.playwright.com";
+
+        await page.getByTestId("title-input").fill(title);
+        await page.getByTestId("author-input").fill(author);
+        await page.getByTestId("url-input").fill(url);
+        await page.getByTestId("create-blog-submit").click();
+
+        await expect(page.getByText(`${title} ${author}`)).not.toBeNull();
+      });
     });
   });
 });

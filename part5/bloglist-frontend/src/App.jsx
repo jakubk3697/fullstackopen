@@ -135,7 +135,9 @@ const App = () => {
         <>
           <h2>Blogs</h2>
           {notification.message && (
-            <p style={{ color: notification.color }}>{notification.message}</p>
+            <p data-testid="success" style={{ color: notification.color }}>
+              {notification.message}
+            </p>
           )}
           <p>{user.name} logged in</p>
           <button
@@ -147,7 +149,7 @@ const App = () => {
             logout
           </button>
 
-          <Togglable buttonLabel="new blog">
+          <Togglable buttonLabel="new blog" class="newBlog">
             <BlogForm createBlog={addBlog} />
           </Togglable>
 
