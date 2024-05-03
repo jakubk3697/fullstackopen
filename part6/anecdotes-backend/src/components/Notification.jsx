@@ -11,7 +11,7 @@ const Notification = () => {
     marginTop: 24,
   };
 
-  switch (notification) {
+  switch (notification.message) {
     case null:
       style.display = "none";
       break;
@@ -20,7 +20,7 @@ const Notification = () => {
       break;
   }
 
-  return <div style={style}>{notification}</div>;
+  return <div style={style}>{notification.message}</div>;
 };
 
 export default Notification;
