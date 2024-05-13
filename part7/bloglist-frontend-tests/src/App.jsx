@@ -1,46 +1,50 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import Togglable from "./components/Togglable";
 import BlogForm from "./components/BlogForm";
 import LoginForm from "./components/LoginForm";
+import NotificationContext from "./NotificationContext";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuthState, useAuthDispatch } from "./AuthContext";
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [notification, setNotification] = useState({
-    message: null,
-    color: "green",
-  });
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
+  const { username, password, user } = useAuthState();
+  const dispatch = useAuthDispatch();
+
   const [loginVisible, setLoginVisible] = useState(false);
 
-  useEffect(() => {
-    blogService.getAll().then((blogs) => {
-      setBlogs(blogs.sort((a, b) => b.likes - a.likes));
-    });
-  }, []);
+  const { notification, dispatchNotification } =
+    useContext(NotificationContext);
+
+  const queryClient = useQueryClient();
+
+  const result = useQuery({
+    queryKey: ["blogs"],
+    queryFn: blogService.getAll,
+  });
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      setUser(user);
+      dispatch({ type: "SET_USER", payload: user });
       blogService.setToken(user.token);
     }
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (notification.message) {
       const timer = setTimeout(() => {
-        setNotification({ message: null, color: "green" });
+        dispatchNotification({
+          type: "CLEAR_NOTIFICATION",
+        });
       }, 5000);
 
       return () => clearTimeout(timer);
     }
-  }, [notification]);
+  }, [notification.message, dispatchNotification]);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -51,52 +55,102 @@ const App = () => {
       });
       window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
       blogService.setToken(user.token);
-      setUser(user);
-      setUsername("");
-      setPassword("");
+      dispatch({ type: "SET_USER", payload: user });
+      dispatch({ type: "SET_USERNAME", payload: "" });
+      dispatch({ type: "SET_PASSWORD", payload: "" });
     } catch (exception) {
-      setNotification({ message: "wrong username or password", color: "red" });
+      dispatchNotification({
+        type: "SET_NOTIFICATION",
+        message: "wrong username or password",
+        color: "red",
+      });
       console.log("wrong credentials");
     }
   };
 
-  const addBlog = async (blogObject) => {
-    try {
-      const returnedBlog = await blogService.create(blogObject);
-      setBlogs(blogs.concat(returnedBlog));
-      setNotification({
-        message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+  const addBlogMutation = useMutation({
+    mutationFn: blogService.create,
+    onSuccess: (blog) => {
+      queryClient.setQueryData(["blogs"], (oldData) => [...oldData, blog]);
+      dispatchNotification({
+        type: "SET_NOTIFICATION",
+        message: `a new blog ${blog.title} by ${blog.author} added`,
         color: "green",
       });
-    } catch (exception) {
-      console.log(exception);
-      setNotification({ message: "error adding blog", color: "red" });
-    }
+    },
+    onError: (error) => {
+      console.log(error);
+      dispatchNotification({
+        type: "SET_NOTIFICATION",
+        message: "error adding blog",
+        color: "red",
+      });
+    },
+  });
+
+  const addBlog = async (blogObject) => {
+    addBlogMutation.mutate(blogObject);
   };
+
+  const updateBlogMutation = useMutation({
+    mutationFn: blogService.update,
+    onSuccess: (blog) => {
+      queryClient.setQueryData(["blogs"], (oldData) =>
+        oldData.map((b) => (b.id !== blog.id ? b : blog)),
+      );
+      dispatchNotification({
+        type: "SET_NOTIFICATION",
+        message: `blog ${blog.title} updated`,
+        color: "green",
+      });
+    },
+    onError: (error) => {
+      console.log(error);
+      dispatchNotification({
+        type: "SET_NOTIFICATION",
+        message: "error updating blog",
+        color: "red",
+      });
+    },
+  });
 
   const updateBlog = async (blogObject) => {
-    try {
-      const updatedBlog = await blogService.update(blogObject.id, blogObject);
-      setBlogs(
-        blogs.map((blog) => (blog.id !== updatedBlog.id ? blog : updatedBlog)),
-      );
-    } catch (exception) {
-      console.log(exception);
-    }
+    updateBlogMutation.mutate(blogObject);
   };
 
-  const deleteBlog = async (blogObject) => {
-    try {
-      await blogService.remove(blogObject.id);
-      setBlogs(blogs.filter((blog) => blog.id !== blogObject.id));
-    } catch (exception) {
-      console.log(exception);
-    }
+  const deleteBlogMutation = useMutation({
+    mutationFn: blogService.remove,
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData(["blogs"], (oldData) =>
+        oldData.filter((b) => b.id !== variables),
+      );
+      dispatchNotification({
+        type: "SET_NOTIFICATION",
+        message: `blog deleted`,
+        color: "green",
+      });
+    },
+    onError: (error) => {
+      console.log(error);
+      dispatchNotification({
+        type: "SET_NOTIFICATION",
+        message: "error deleting blog",
+        color: "red",
+      });
+    },
+  });
+
+  const deleteBlog = async (blog) => {
+    deleteBlogMutation.mutate(blog.id);
   };
 
   const loginForm = () => {
     const hideWhenVisible = { display: loginVisible ? "none" : "" };
     const showWhenVisible = { display: loginVisible ? "" : "none" };
+
+    if (result.isLoading) {
+      return <div>Loading...</div>;
+    }
 
     return (
       <>
@@ -109,8 +163,12 @@ const App = () => {
             username={username}
             password={password}
             handleLogin={handleLogin}
-            handleUsernameChange={({ target }) => setUsername(target.value)}
-            handlePasswordChange={({ target }) => setPassword(target.value)}
+            handleUsernameChange={({ target }) => {
+              dispatch({ type: "SET_USERNAME", payload: target.value });
+            }}
+            handlePasswordChange={({ target }) => {
+              dispatch({ type: "SET_PASSWORD", payload: target.value });
+            }}
           />
           <button onClick={() => setLoginVisible(false)}>cancel</button>
           {notification.message && (
@@ -121,6 +179,10 @@ const App = () => {
     );
   };
 
+  if (result.isLoading) return <div>Loading...</div>;
+  if (result.isError) return <div>Error: {result.error.message}</div>;
+  const blogs = result?.data;
+
   return (
     <>
       {!user && loginForm()}
@@ -130,11 +192,11 @@ const App = () => {
           {notification.message && (
             <p style={{ color: notification.color }}>{notification.message}</p>
           )}
-          <p>{user.name} logged in</p>
+          <p>{user.username} logged in</p>
           <button
             onClick={() => {
               window.localStorage.removeItem("loggedBlogappUser");
-              setUser(null);
+              dispatch({ type: "SET_USER", payload: null });
             }}
           >
             logout

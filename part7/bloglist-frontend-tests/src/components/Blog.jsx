@@ -4,8 +4,6 @@ const Blog = ({ blog, updateBlog, deleteBlog }) => {
   const [visible, setVisible] = useState(false);
   const [updatedBlog, setUpdatedBlog] = useState(blog);
 
-  console.log(blog);
-
   const blogStyle = {
     padding: 8,
     border: "solid",
