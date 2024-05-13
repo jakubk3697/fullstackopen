@@ -11,6 +11,10 @@
     {
       "content": "123",
       "id": 3
+    },
+    {
+      "content": "new note",
+      "id": 4
     }
   ],
   "persons": [
@@ -33,6 +37,11 @@
       "name": "12",
       "number": "12",
       "id": 4
+    },
+    {
+      "name": "john doe II",
+      "number": "00-11-22",
+      "id": 5
     }
   ]
 }
