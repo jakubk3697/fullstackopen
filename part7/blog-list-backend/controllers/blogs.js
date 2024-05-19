@@ -45,6 +45,25 @@ blogsRouter.post("/", async (request, response) => {
   response.status(201).json(savedBlog);
 });
 
+blogsRouter.post("/:id/comments", async (request, response) => {
+  const { comment } = request.body;
+  const user = request.user;
+
+  if (!user) {
+    return response.status(401).json({ error: "token invalid" });
+  }
+
+  const blog = await Blog.findById(request.params.id);
+  blog.comments = blog.comments ? blog.comments.concat(comment) : [comment];
+
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {
+    new: true,
+  });
+
+  response.json(updatedBlog);
+  response.status(201).json(savedBlog);
+});
+
 blogsRouter.delete("/:id", async (request, response) => {
   const user = request.user;
   console.log("user", user);

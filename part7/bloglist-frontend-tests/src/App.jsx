@@ -1,13 +1,23 @@
 import { useState, useEffect, useContext } from "react";
-import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
+import userServices from "./services/users";
+import Blogs from "./components/Blogs";
 import Togglable from "./components/Togglable";
 import BlogForm from "./components/BlogForm";
 import LoginForm from "./components/LoginForm";
 import NotificationContext from "./NotificationContext";
+import Users from "./pages/Users";
+import User from "./pages/User";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthState, useAuthDispatch } from "./AuthContext";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import Blog from "./components/Blog";
+
+import Container from "react-bootstrap/Container";
+import Navbar from "react-bootstrap/Navbar";
+import Nav from "react-bootstrap/Nav";
+import Button from "react-bootstrap/Button";
 
 const App = () => {
   const { username, password, user } = useAuthState();
@@ -23,6 +33,11 @@ const App = () => {
   const result = useQuery({
     queryKey: ["blogs"],
     queryFn: blogService.getAll,
+  });
+
+  const usersData = useQuery({
+    queryKey: ["users"],
+    queryFn: userServices.getAll,
   });
 
   useEffect(() => {
@@ -148,10 +163,6 @@ const App = () => {
     const hideWhenVisible = { display: loginVisible ? "none" : "" };
     const showWhenVisible = { display: loginVisible ? "" : "none" };
 
-    if (result.isLoading) {
-      return <div>Loading...</div>;
-    }
-
     return (
       <>
         <div style={hideWhenVisible}>
@@ -179,44 +190,89 @@ const App = () => {
     );
   };
 
-  if (result.isLoading) return <div>Loading...</div>;
-  if (result.isError) return <div>Error: {result.error.message}</div>;
+  if (result.isLoading || usersData.isLoading) return <div>Loading...</div>;
+  if (result.isError || usersData.isError)
+    return <div>Error: {result.error.message}</div>;
   const blogs = result?.data;
+  const users = usersData?.data;
 
   return (
-    <>
+    <Container>
       {!user && loginForm()}
       {user && (
         <>
-          <h2>Blogs</h2>
-          {notification.message && (
-            <p style={{ color: notification.color }}>{notification.message}</p>
-          )}
-          <p>{user.username} logged in</p>
-          <button
-            onClick={() => {
-              window.localStorage.removeItem("loggedBlogappUser");
-              dispatch({ type: "SET_USER", payload: null });
-            }}
-          >
-            logout
-          </button>
+          <Router>
+            <Navbar bg="dark" variant="dark" expand="lg">
+              <Navbar.Toggle aria-controls="basic-navbar-nav" />
+              <Navbar.Collapse
+                id="basic-navbar-nav"
+                className="justify-content-between"
+              >
+                <Nav className="mr-auto">
+                  <Link className="nav-link" to="/">
+                    blogs
+                  </Link>
+                  <Link className="nav-link" to="/users">
+                    users
+                  </Link>
+                </Nav>
+                <div>
+                  <Navbar.Text>
+                    Signed in as: <a href="#login">{user.username}</a>
+                  </Navbar.Text>
+                  <Button
+                    variant="outline-light"
+                    onClick={() => {
+                      window.localStorage.removeItem("loggedBlogappUser");
+                      dispatch({ type: "SET_USER", payload: null });
+                    }}
+                  >
+                    logout
+                  </Button>
+                </div>
+              </Navbar.Collapse>
+            </Navbar>
+            <nav></nav>
+            <h2>Blogs</h2>
+            {notification.message && (
+              <p style={{ color: notification.color }}>
+                {notification.message}
+              </p>
+            )}
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <>
+                    <Togglable buttonLabel="new blog">
+                      <BlogForm createBlog={addBlog} />
+                    </Togglable>
 
-          <Togglable buttonLabel="new blog">
-            <BlogForm createBlog={addBlog} />
-          </Togglable>
-
-          {blogs.map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              updateBlog={updateBlog}
-              deleteBlog={deleteBlog}
-            />
-          ))}
+                    <Blogs
+                      blogs={blogs}
+                      updateBlog={updateBlog}
+                      deleteBlog={deleteBlog}
+                    />
+                  </>
+                }
+              />
+              <Route
+                path="/blogs/:id"
+                element={
+                  <Blog
+                    blogs={blogs}
+                    updateBlog={updateBlog}
+                    deleteBlog={deleteBlog}
+                  />
+                }
+              />
+              <Route path="/users" element={<Users users={users} />} />
+              <Route path="/users/:id" element={<User users={users} />} />
+            </Routes>
+          </Router>
         </>
       )}
-    </>
+    </Container>
   );
 };
 

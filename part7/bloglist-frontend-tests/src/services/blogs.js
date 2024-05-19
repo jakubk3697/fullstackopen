@@ -13,6 +13,12 @@ const getAll = async () => {
   return response.data;
 };
 
+const getUserBlogs = async (userId) => {
+  const request = axios.get(`${baseUrl}/users/${userId}`);
+  const response = await request;
+  return response.data;
+};
+
 const create = async (newObject) => {
   const config = {
     headers: { Authorization: token },
@@ -28,6 +34,19 @@ const update = async (updatedBlog) => {
   return response.data;
 };
 
+const createComment = async (blogId, comment) => {
+  const config = {
+    headers: { Authorization: token },
+  };
+
+  const response = await axios.post(
+    `${baseUrl}/${blogId}/comments`,
+    { comment },
+    config,
+  );
+  return response.data;
+};
+
 const remove = async (id) => {
   const config = {
     headers: { Authorization: token },
@@ -40,8 +59,10 @@ const remove = async (id) => {
 
 export default {
   getAll,
+  getUserBlogs,
   create,
   update,
+  createComment,
   setToken,
   remove,
 };
