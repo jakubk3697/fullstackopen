@@ -3,25 +3,31 @@ import { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { ADD_BOOK, ALL_AUTHORS, ALL_BOOKS } from "../queries";
 
-const NewBook = (props) => {
+const NewBook = ({ show, updateCacheWith, setError }) => {
+  const [addBook] = useMutation(ADD_BOOK, {
+    onError: (error) => {
+      setError(error.graphQLErrors[0].message);
+    },
+    refetchQueries: [{ query: ALL_AUTHORS, ALL_BOOKS }],
+    onCompleted: () => {
+      updateBooksView();
+    },
+  });
+
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [published, setPublished] = useState("");
   const [genre, setGenre] = useState("");
   const [genres, setGenres] = useState([]);
 
-  const [createBook] = useMutation(ADD_BOOK, {
-    refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }],
-  });
-
-  if (!props.show) {
+  if (!show) {
     return null;
   }
 
   const submit = async (event) => {
     event.preventDefault();
 
-    createBook({
+    await addBook({
       variables: { title, author, published: parseInt(published), genres },
     });
 
@@ -35,6 +41,13 @@ const NewBook = (props) => {
   const addGenre = () => {
     setGenres(genres.concat(genre));
     setGenre("");
+  };
+
+  const updateBooksView = () => {
+    updateCacheWith({
+      variables: { genre: null },
+      data: { allBooks: [] },
+    });
   };
 
   return (

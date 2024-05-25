@@ -2,13 +2,16 @@ import { ALL_AUTHORS, EDIT_AUTHOR } from "../queries";
 import { useQuery, useMutation } from "@apollo/client";
 
 /* eslint-disable react/prop-types */
-const Authors = (props) => {
+const Authors = ({ show, setError }) => {
   const allAuthors = useQuery(ALL_AUTHORS);
   const [editAuthor] = useMutation(EDIT_AUTHOR, {
+    onError: (error) => {
+      setError(error.graphQLErrors[0].message);
+    },
     refetchQueries: [{ query: ALL_AUTHORS }],
   });
 
-  if (!props.show || allAuthors.loading) {
+  if (!show || allAuthors.loading) {
     return null;
   }
 
