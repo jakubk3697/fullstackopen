@@ -4,3 +4,9 @@ services:
     build: . # Declares where to build if image is not found
     ports: # Declares the ports to publish
       - 3000:3000
+  mongo:
+    volumes:
+      - mongo_data:/data/db # Use only this named volume
+
+volumes:
+  mongo_data: # Define the named volume here
