@@ -1,6 +1,6 @@
 services:
   app:
-    build: .
+    build: ./todo-backend
     ports:
       - 3000:3000
     environment:
@@ -10,8 +10,17 @@ services:
       - mongo
       - redis
     volumes:
-      - .:/usr/src/app # For development hot-reload
+      - ./todo-backend:/usr/src/app
     command: npm run dev
+
+  frontend:
+    build: ./todo-frontend
+    ports:
+      - 5173:80
+    environment:
+      - VITE_BACKEND_URL=http://localhost:3000
+    depends_on:
+      - app
 
   mongo:
     image: mongo
@@ -21,10 +30,10 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
       MONGO_INITDB_DATABASE: the_database
-
     volumes:
-      - ./mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+      - ./todo-backend/mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
       - mongo_data:/data/db
+
   redis:
     image: redis
     ports:
