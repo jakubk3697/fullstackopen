@@ -2,7 +2,7 @@ services:
   backend:
     build:
       context: ./todo-backend
-      target: backend-prod
+      target: backend-dev
     ports:
       - 3000:3000
     environment:
@@ -11,16 +11,21 @@ services:
     depends_on:
       - mongo
       - redis
-    command: npm start
+    volumes:
+      - ./todo-backend:/usr/src/app
+    command: npm run dev
 
   frontend:
     build:
       context: ./todo-frontend
-      target: frontend-prod
+      target: frontend-dev
     ports:
       - 5173:80
     environment:
       - VITE_BACKEND_URL=http://localhost:3000
+    volumes:
+      - ./todo-frontend:/usr/src/app
+      - /usr/src/app/node_modules
     depends_on:
       - backend
 
