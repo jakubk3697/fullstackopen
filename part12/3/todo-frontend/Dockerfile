@@ -1,13 +1,28 @@
-FROM node:20 as todo-frontend
+# # Production config
+# FROM node:20 as frontend-prod
+
+# WORKDIR /usr/src/app
+
+# COPY . .
+
+# RUN npm ci
+
+# RUN npm run build
+
+# FROM nginx:1.25-alpine
+
+# COPY --from=frontend-prod /usr/src/app/dist /usr/share/nginx/html
+
+
+# Development config
+FROM node:20 as frontend-dev
 
 WORKDIR /usr/src/app
 
 COPY . .
 
-RUN npm ci
+RUN npm install
 
-RUN npm run build
+EXPOSE 80
 
-FROM nginx:1.25-alpine
-
-COPY --from=todo-frontend /usr/src/app/dist /usr/share/nginx/html
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "80"]

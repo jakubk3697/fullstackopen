@@ -1,5 +1,5 @@
 services:
-  app:
+  backend:
     build: ./todo-backend
     ports:
       - 3000:3000
@@ -18,9 +18,12 @@ services:
     ports:
       - 5173:80
     environment:
-      - VITE_BACKEND_URL=http://app:3000
+      - VITE_BACKEND_URL=http://localhost:3000
+    volumes:
+      - ./todo-frontend:/usr/src/app
+      - /usr/src/app/node_modules
     depends_on:
-      - app
+      - backend
 
   mongo:
     image: mongo
