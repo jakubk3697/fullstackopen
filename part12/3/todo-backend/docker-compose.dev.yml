@@ -32,6 +32,7 @@ services:
     image: redis
     ports:
       - 3457:6379
+    command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - redis-data:/data
 
