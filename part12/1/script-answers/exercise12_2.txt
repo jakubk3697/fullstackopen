@@ -1,0 +1,56 @@
+Script started on Fri Mar  7 22:15:37 2025
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                                                                   
+ 
+]2;jakubkaminski@Jakubs-MacBook-Air:~/Robocze/fullstackopen/part12]1;..ckopen/part12]7;file://Jakubs-MacBook-Air.local/Users/jakubkaminski/Robocze/fullstackopen/part12\
+[0m[27m[24m[J[01;32m➜  [36mpart12[00m [K[?1h=[?2004h
+
+[0m[27m[24m[J[01;32m➜  [36mpart12[00m [01;34mgit:([31mmain[34m) [33m✗[00m [Kddocker run it  -it ubuntu bash[?1l>[?2004l
+
+]2;docker run -it ubuntu bash]1;dockerUnable to find image 'ubuntu:latest' locally
+latest: Pulling from library/ubuntu
+
+[1A[2K
+5b17151e9710: Pulling fs layer 
+[1B[1A[2K
+5b17151e9710: Downloading [=>                                                 ]  1.049MB/28.89MB
+[1B[1A[2K
+5b17151e9710: Downloading [===>                                               ]  2.097MB/28.89MB
+[1B[1A[2K
+5b17151e9710: Downloading [===>                                               ]  2.097MB/28.89MB
+[1B[1A[2K
+5b17151e9710: Downloading [=======>                                           ]  4.194MB/28.89MB
+[1B[1A[2K
+5b17151e9710: Downloading [============>                                      ]   7.34MB/28.89MB
+[1B[1A[2K
+5b17151e9710: Downloading [================>                                  ]  9.437MB/28.89MB
+[1B[1A[2K
+5b17151e9710: Downloading [================>                                  ]  9.437MB/28.89MB
+[1B[1A[2K
+5b17151e9710: Downloading [=====================>                             ]  12.58MB/28.89MB
+[1B[1A[2K
+5b17151e9710: Downloading [===========================>                       ]  15.73MB/28.89MB
+[1B[1A[2K
+5b17151e9710: Downloading [==============================>                    ]  17.83MB/28.89MB
+[1B[1A[2K
+5b17151e9710: Downloading [================================>                  ]  18.87MB/28.89MB
+[1B[1A[2K
+5b17151e9710: Downloading [======================================>            ]  22.02MB/28.89MB
+[1B[1A[2K
+5b17151e9710: Downloading [=======================================>           ]  23.07MB/28.89MB
+[1B[1A[2K
+5b17151e9710: Downloading [===========================================>       ]  25.17MB/28.89MB
+[1B[1A[2K
+5b17151e9710: Downloading [===========================================>       ]  25.17MB/28.89MB
+[1B[1A[2K
+5b17151e9710: Download complete 
+[1BDigest: sha256:72297848456d5d37d1262630108ab308d3e9ec7ed1c3286a32fe09856619a782
+Status: Downloaded newer image for ubuntu:latest
+[?2004h]0;root@203b3f4e7e9d: /root@203b3f4e7e9d:/# ls
+[?2004l
+[0m[01;36mbin[0m  [01;34mboot[0m  [01;34mdev[0m  [01;34metc[0m  [01;34mhome[0m  [01;36mlib[0m  [01;34mmedia[0m  [01;34mmnt[0m  [01;34mopt[0m  [01;34mproc[0m  [01;34mroot[0m  [01;34mrun[0m  [01;36msbin[0m  [01;34msrv[0m  [01;34msys[0m  [30;42mtmp[0m  [01;34musr[0m  [01;34mvar[0m
+[?2004h]0;root@203b3f4e7e9d: /root@203b3f4e7e9d:/# cd /usr/src/app^C[?2004l
+[?2004h[?2004l
+
+[?2004h]0;root@203b3f4e7e9d: /root@203b3f4e7e9d:/# mkd   mkdir /usr/src/app
+[?2004l
+[?2004h]0;root@203b3f4e7e9d: /root@203b3f4e7e9d:/# touch mkdir /usr/src/appmkdir[1P[1P[1P[1P[1P[1@t[1@o[1@u[1@c[1@h

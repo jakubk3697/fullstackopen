@@ -6,6 +6,8 @@ COPY --chown=node:node . .
 
 RUN npm ci
 
-ENV DEBUG=2:* 
+ENV DEBUG=2:*
+
+USER node
 
 CMD npm start
