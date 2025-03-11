@@ -1,4 +1,21 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000" # Adjust the port according to your app's needs
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - MONGO_URL=mongodb://the_username:the_password@mongo:27017/the_database
+    depends_on:
+      - mongo
+      - redis
+    command: npm run dev # Changed from npm start to npm run dev
+    volumes:
+      - ./:/usr/src/app # For development, mount the code for hot reloading
+      - /usr/src/app/node_modules # Don't override node_modules
+
   mongo:
     image: mongo
     ports:
@@ -10,5 +27,14 @@ services:
     volumes:
       - ./mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
       - mongo-data:/data/db
+
+  redis:
+    image: redis
+    ports:
+      - 3457:6379
+    volumes:
+      - redis-data:/data
+
 volumes:
   mongo-data:
+  redis-data:
