@@ -1,23 +1,11 @@
-FROM node:20 as backend-base
+FROM node:20-alpine
 
 WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-# Development build stage
-FROM backend-base as backend-dev
-RUN npm install
-COPY . .
-ENV DEBUG=todo-express-backend:*
-USER node
-CMD ["npm", "run", "dev"]
+RUN npm ci
 
-# Production build stage
-FROM backend-base as backend-prod
-RUN npm ci --only=production
-COPY --chown=node:node . .
-ENV DEBUG=todo-express-backend:*
-ENV MONGO_URL=${MONGO_URL}
-ENV REDIS_URL=${REDIS_URL}
-USER node
+COPY . .
+
 CMD ["npm", "start"]

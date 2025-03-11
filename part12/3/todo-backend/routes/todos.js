@@ -14,13 +14,6 @@ router.post('/', async (req, res) => {
     text: req.body.text,
     done: false
   })
-
-  const redis = require('../redis');
-  const currentTodos = Number(await redis.getAsync('added_todos')) || 0
-  await redis.setAsync('added_todos', currentTodos + 1)
-
-  console.log('Added todos:', await redis.getAsync('added_todos'))
-
   res.send(todo);
 });
 
@@ -36,21 +29,18 @@ const findByIdMiddleware = async (req, res, next) => {
 
 /* DELETE todo. */
 singleRouter.delete('/', async (req, res) => {
-  await req.todo.delete()
+  await req.todo.delete()  
   res.sendStatus(200);
 });
 
 /* GET todo. */
 singleRouter.get('/', async (req, res) => {
-  res.send(req.todo);
+  res.sendStatus(405); // Implement this
 });
 
 /* PUT todo. */
 singleRouter.put('/', async (req, res) => {
-  req.todo.text = req.body.text;
-  req.todo.done = req.body.done;
-  await req.todo.save();
-  res.send(req.todo);
+  res.sendStatus(405); // Implement this
 });
 
 router.use('/:id', findByIdMiddleware, singleRouter)
