@@ -1,13 +1,13 @@
-services:
-  app:
-    image: todo-front-dev
-    build:
-      context: .
-      dockerfile: dev.Dockerfile
-    ports:
-      - 5173:5173
-    volumes:
-      - ./:/usr/src/app
-      # Don't sync node_modules between host and container
-      - /usr/src/app/node_modules
-    container_name: todo-front-dev
+# services:
+#   app:
+#     image: todo-front-dev
+#     build:
+#       context: .
+#       dockerfile: dev.Dockerfile
+#     ports:
+#       - 5173:5173
+#     volumes:
+#       - ./:/usr/src/app
+#       # Don't sync node_modules between host and container
+#       - /usr/src/app/node_modules
+#     container_name: todo-front-dev
