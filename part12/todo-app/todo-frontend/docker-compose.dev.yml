@@ -11,5 +11,3 @@ services:
       # Don't sync node_modules between host and container
       - /usr/src/app/node_modules
     container_name: todo-front-dev
-  debug-helper:
-    image: busybox
