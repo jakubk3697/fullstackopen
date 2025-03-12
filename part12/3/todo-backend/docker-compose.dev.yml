@@ -2,7 +2,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: dev.Dockerfile
     ports:
       - "3000:3000"
     environment:
@@ -11,7 +11,9 @@ services:
     depends_on:
       - mongo
       - redis
-    command: npm run start
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
 
   mongo:
     image: mongo
@@ -23,7 +25,7 @@ services:
       MONGO_INITDB_DATABASE: the_database
     volumes:
       - ./mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
-      - mongo-data:/data/db
+      - ./mongo/mongo-data:/data/db
 
   redis:
     image: redis
@@ -31,8 +33,4 @@ services:
       - 3457:6379
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
-      - redis-data:/data
-
-volumes:
-  mongo-data:
-  redis-data:
+      - ./redis/redis-data:/data
