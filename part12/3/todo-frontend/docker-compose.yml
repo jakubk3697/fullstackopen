@@ -1,0 +1,9 @@
+services:
+  todo-front:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    environment:
+      - VITE_BACKEND_URL=http://localhost:3000
